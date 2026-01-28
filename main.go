@@ -28,7 +28,7 @@ func main() {
 	username := os.Args[1]
 
 	// Print the result for testing
-	fmt.Printf("Searching github activity for user: %s, ", username)
+	fmt.Printf("Searching github activity for user: %s\n", username)
 
 	// 1. Arrange the URL
 	url := fmt.Sprintf("https://api.github.com/users/%s/events", username)
@@ -36,7 +36,7 @@ func main() {
 	// 2. Fetch API
 	resp, err := http.Get(url)
 	if err != nil {
-		fmt.Printf("Failed to fetch data: %v", err)
+		fmt.Printf("Failed to fetch data: %v\n", err)
 		return
 	}
 	defer resp.Body.Close() // Make sure to close the connection after you fetch it
@@ -48,7 +48,7 @@ func main() {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("Error: API issues (Status: %d)", resp.StatusCode)
+		fmt.Printf("Error: API issues (Status: %d)\n", resp.StatusCode)
 		return
 	}
 
@@ -58,15 +58,39 @@ func main() {
 	// 5. Convert plain JSON into Go Struct
 	err = json.NewDecoder(resp.Body).Decode(&events)
 	if err != nil {
-		fmt.Printf("Failed to read JSON: %v", err)
+		fmt.Printf("Failed to read JSON: %v\n", err)
 		return
 	}
 
-	// 6. Check fo if the activity is empty
+	// 6. Check for if the activity is empty
 	if len(events) == 0 {
 		fmt.Printf("There are no recent activities for this user.")
 		return
 	}
 
 	fmt.Println("Recent activities: ")
+	printActivity(events)
+
+}
+
+func printActivity(events []GitHubEvent) {
+	for _, event := range events {
+		action := ""
+
+		// Switch Case to differentiate messages based on event type
+		switch event.Type {
+		case "PushEvent":
+			action = "Pushed commits to"
+		case "WatchEvent":
+			action = "Starred"
+		case "CreateEvent":
+			action = "Created a new resource in"
+		case "IssuesEvent":
+			action = "Opened/Closed an issue in"
+		default:
+			action = event.Type // Display the original type if we haven't handled it yet.
+		}
+
+		fmt.Printf("- %s %s\n", action, event.Repo.Name)
+	}
 }
