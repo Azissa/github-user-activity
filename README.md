@@ -1,6 +1,7 @@
 # GitHub User Activity CLI
 
 A simple Command Line Interface (CLI) built with **Go** to fetch and display recent GitHub user activity.
+this project idea is from https://roadmap.sh/projects/github-user-activity
 
 ## 🚀 About This Project
 This project is my first project in learning the Go programming language. The goal is to understand the basics of networking in Go, handle terminal input, and parse JSON data from the GitHub API without using external libraries.
